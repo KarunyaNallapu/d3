@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Ordinal Scales</title>
+    <style>
+        body {
+            font: 10px sans-serif;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: grey;
+        }
+
+        div {
+            height: 20px;
+            font-size: x-large;
+            text-align: right;
+            color: white;
+            padding: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<h2>Discrete Input Domain &rarr; Discrete Output Range</h2>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script>
+
+  const data = ["I", "II", "III"];
+
+  const nameScale = d3.scaleOrdinal()
+    .domain(data)
+    .range([300, 100, 400]);
+    
+
+  const widthScale = d3.scaleOrdinal()
+    .domain(data)
+    .range(["Jan", "Feb", "Mar"])
+    .range([300, 100, 400]);
+    
+
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+  d3.select("body")
+    .selectAll("div")
+    .data(data)
+    .enter()
+    .append("div")
+    .text(nameScale)
+    .style("width", d => widthScale(d) + "px")
+    .style("background-color", color);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<html>
+<head>
+    <title>Responsive Chart</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <style>
+      body {
+    margin: 0;
+    padding: 0;
+}
+
+svg {
+    background-color: rgba(0, 0, 0, 0.125);
+    padding: calc(4vh + 10px);
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: .2vh;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: #808080;
+    stroke-width: 1;
+}
+
+.axis text {
+    fill: #766;
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 1.5vh;
+}
+
+
+    </style>
+
+    <!-- load the d3.js library -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+ 
+
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+
+    <link href="css/responsive.css" rel="stylesheet" />
+
+</head>
+<body>
+    <script>
+      function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+        var context = this, args = arguments;
+        var later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
+var Chart = (function (window, d3) {
+
+    var svg, data, x, y, xAxis, yAxis, chartWrapper, valueLine, path, width, height;
+
+
+    init();
+
+    function init() {
+
+        data = [
+            { "xVal": 1, "yVal": 7 }, { "xVal": 2, "yVal": 9 }, { "xVal": 3, "yVal": 6 }, { "xVal": 4, "yVal": 10 },
+            { "xVal": 5, "yVal": 8 }
+        ];
+
+        var xExtent = d3.extent(data,
+            function (d) {
+                return d.xVal;
+            });
+
+        var yExtent = d3.extent(data,
+            function (d) {
+                return d.yVal;
+            });
+
+        x = d3.scaleLinear().domain(xExtent);
+        y = d3.scaleLinear().domain(yExtent);
+
+        xAxis = d3.axisBottom()
+            .scale(x)
+            .ticks(5);
+
+        yAxis = d3.axisLeft()
+            .scale(y)
+            .ticks(5);
+
+        valueLine = d3.line()
+            .x(function (d) {
+                return x(d.xVal);
+            })
+            .y(function (d) {
+                return y(d.yVal);
+            });
+
+        //initialize svg
+        svg = d3.select("body").append("svg");
+        chartWrapper = svg.append("g");
+        path = chartWrapper.append("path").datum(data).classed("line", true);
+        chartWrapper.append("g").classed("x axis", true);
+
+        chartWrapper.append("g").classed("y axis", true);
+
+        render();
+    }
+
+
+    function render() {
+
+        width = window.innerWidth > window.innerHeight ? window.innerHeight * .707 : window.innerWidth * .707;
+
+        height = width;
+
+        x.range([0, width]);
+        y.range([height, 0]);
+
+        //update svg elements to new dimensions
+        svg
+            .attr("width", width)
+            .attr("height", height);
+
+        //update the axis and line
+        xAxis.scale(x);
+        yAxis.scale(y);
+
+
+        svg.select(".x.axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.select(".y.axis")
+            .call(yAxis);
+
+        path.attr("d", valueLine);
+    }
+
+    return {
+        render: render
+    };
+})(window, d3);
+
+
+var resizeChart = debounce(function() {
+
+    Chart.render();
+}, 8);
+
+window.addEventListener("resize", resizeChart);
+    </script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html {
+    background-color: hsl(0, 0%, 100%);
+    overflow-y: scroll;
+    font-family: MetricWeb, sans-serif;
+  }
+
+  .bounding {
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 30px;
+  }
+
+  #chart {
+    width: 100%;
+    max-width: 650px;
+  }
+
+  .header {
+    width: 50px;
+    border-top: 2.5px solid #000000;
+    margin-bottom: 0px;
+    display: block;
+  }
+
+  .main {
+    fill: #33302e;
+    font-size: 17px;
+  }
+
+  .sub {
+    fill: #66605c;
+    display: inline-block;
+    font-size: 13px;
+    opacity: 0.90;
+  }
+
+  .y-axis path,
+  .x-axis path {
+    stroke: #757575;
+    shape-rendering: crispEdges;
+    stroke-width: 1px;
+  }
+
+  .x-axis text,
+  .y-axis text {
+    font-size: 11px;
+    fill: #66605c;
+    opacity: 0.95;
+  }
+
+  .x-axis .tick line {
+    stroke: #66605c;
+    stroke-width: 0.8px;
+    opacity: 0.2;
+  }
+
+  .y-axis .tick line {
+    stroke: #66605c;
+    stroke-width: 0.8px;
+    opacity: 0.2;
+  }
+
+  .footnote text {
+    font-size: 9px;
+    opacity: 0.85;
+    fill: #66605c;
+  }
+</style>
+
+<body>
+  <div class="bounding">
+    <div class="header"></div>
+    <div id="chart"></div>
+  </div>
+</body>
+<script>
+  var dataset;
+
+  d3.csv("doll.csv", function (err, data) {
+
+    data.forEach(function (d) {
+      d.Year = +d.Year;
+    })
+
+    dataset = data
+
+    draw(dataset);
+  });
+
+  function draw(data) {
+    "use strict";
+
+    var margin = {
+      top: 120,
+      right: 40,
+      bottom: 70,
+      left: 190
+    },
+      container_width = 650,
+      container_height = 550,
+      width = container_width - margin.left - margin.right,
+      height = container_height - margin.top - margin.bottom;
+
+    var svg = d3
+      .select("#chart")
+      .append("svg")
+      .attr("id", "svg_container")
+      .attr("viewBox", `0 0 ${container_width} ${container_height}`)
+      .attr("preserveAspectRatio", "xMidYMid")
+      .append("g")
+      .attr("id", "container")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var main_padding = 20;
+    var sub_padding = 45;
+
+    var chart = d3.select('#svg_container')
+      .append('g')
+      .attr('id', 'text-label')
+
+    chart.append("text")
+      .attr("class", "main")
+     // .text("Long run at the top: Ghosn tenure compared with other car executives*")
+      .attr(
+        "transform",
+        "translate(" + 0 + "," + main_padding + ")"
+      );
+    chart
+      .append("text")
+      .attr("class", "sub")
+      .text("Year placed in charge of group")
+      .attr(
+        "transform",
+        "translate(" + 0 + "," + sub_padding + ")"
+      );
+
+   /* var footer_data = ["*Named Renault CEO in 2005 and later became CEO of Renault-Nissan-Mitsubishi alliance"]
+    svg
+      .append("g")
+      .attr('class', 'footnote')
+      .selectAll('text')
+      .data(footer_data)
+      .enter()
+      .append('text')
+      .text(function (d) { return d; })
+      .attr("transform", function (d, i) {
+        return "translate(" + (-margin.left) + "," + (height + margin.bottom / 1.3 + i * 14) + ")"
+      });*/
+
+    var y_scale = d3
+      .scaleBand()
+      .domain(
+        data.map(function (d) {
+          return d.Person + "," + d.Company;
+        })
+      )
+      .rangeRound([0, height])
+      .paddingInner(0.15)
+
+    var x_scale = d3
+      .scalePoint()
+      .domain(d3.range(2000, 2016))
+      .range([0, width]);
+
+
+    var groups = svg.append("g")
+      .selectAll("g")
+      .data(data)
+      .enter()
+      .append("g")
+      .attr("transform", function (d) {
+        return `translate(0,${y_scale(d.Person + "," + d.Company)})`;
+      })
+    groups
+      .append("rect")
+      .attr("class", "background")
+      .attr("x", -margin.left)
+      .attr("height", y_scale.bandwidth())
+      .attr("width", container_width)
+      .style("fill", function (d, i) {
+        if (i % 2 != 0) {
+          return '#e5f1f5';
+        } else {
+          return '#ffffff';
+        }
+      });
+
+    var yAxis = svg.append("g").attr("class", "y-axis");
+
+    yAxis
+      .attr("transform", "translate(-5," + 0 + ")")
+      .call(
+        d3
+          .axisLeft(y_scale)
+          .tickSizeInner(0)
+          .tickSizeOuter(0)
+          .tickPadding(5)
+          .tickFormat(function (d) {
+            let split = d.split(",")
+            return split[0] + ", " + split[1];
+          })
+      )
+      .call(g => g.select(".domain").remove());
+
+    var xAxis = svg.append("g").attr("class", "x-axis");
+    xAxis
+      .attr("transform", "translate(0," + 0 + ")")
+      .call(
+        d3
+          .axisTop(x_scale)
+          .tickSizeInner(15)
+          .tickSizeOuter(0)
+          .tickPadding(5)
+      )
+      .call(g => g.select(".domain").remove())
+      .call(g => g.selectAll("text").style('font-size', '12'));
+
+    d3.select(".x-axis")
+      .selectAll(".tick")
+      .each(function (d, i) {
+        if (i % 2 == 0) {
+          d3.select(this).remove();
+        }
+      });
+
+    svg.append("svg:defs").append("svg:marker")
+      .attr("id", 'word')
+      .attr("refX", 4)
+      .attr("refY", 4)
+      .attr("markerWidth", 30)
+      .attr("markerHeight", 30)
+      .attr("markerUnits", "userSpaceOnUse")
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M 0,0 8,4 0,8 3,4")
+      .style("fill", "#0079a2")
+
+    var bars = svg
+      .selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("g");
+
+    bars
+      .append("line")
+      .attr("class", "bar")
+      .attr("y1", function (d) {
+        return y_scale(d.Person + "," + d.Company) + y_scale.bandwidth() / 2;
+      })
+      .attr("y2", function (d) {
+        return y_scale(d.Person + "," + d.Company) + y_scale.bandwidth() / 2;
+      })
+      .attr("x1", function (d) {
+        return x_scale(d.Year);
+      })
+      .attr("x2", function (d) {
+        return width;
+      })
+      .attr("stroke-width", 2)
+      .style("stroke", "#0079a2")
+      .attr('marker-end', "url(#word)");
+
+    bars
+      .append("circle")
+      .attr("class", "bar")
+      .attr("cy", function (d) {
+        return y_scale(d.Person + "," + d.Company) + y_scale.bandwidth() / 2;
+      })
+      .attr("cx", function (d) {
+        return x_scale(d.Year);
+      })
+      .attr("r", 5)
+      .style("fill", "#1e558a")
+      .append('title')
+      .text(function (d) {
+        return d.Year;
+      })
+
+    svg
+      .append("g")
+      .selectAll('text')
+      .data(data)
+      .enter()
+      .append('text')
+
+
+    svg.selectAll(".text")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return x_scale(d.Year) - 2.5;
+      })
+      .attr("y", function (d) {
+        return y_scale(d.Person + "," + d.Company) + y_scale.bandwidth() / 2 + 10;
+      })
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'hanging')
+      .attr("fill", "black")
+      .attr('font-size', '12')
+      .text(function (d, i) {
+        return d.Year;
+      });
+  }
+
+</script>
+
+</html>
+

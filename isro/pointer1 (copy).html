@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  background-color: #F1F3F3    
+}
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 2px;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: #6F257F;
+  stroke-width: 5px;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.focus circle {
+  fill: #F1F3F3;
+  stroke: #6F257F;
+  stroke-width: 5px;
+}
+  
+.hover-line {
+  stroke: #6F257F;
+  stroke-width: 2px;
+  stroke-dasharray: 3,3;
+}
+
+</style>
+<body>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+var default_width = 960;
+var default_height = 500;
+var default_ratio = default_width / default_height;
+
+// Current (non-responsive) width and height are calcuated from the default, minus the margins
+var margin = {top: 80, right: 180, bottom: 80, left: 180},
+    width = default_width - margin.left - margin.right,
+    height = default_height - margin.top - margin.bottom;
+
+// Determine current size, which determines vars
+function set_vars() {
+  //alert('setting vars')
+  current_width = window.innerWidth;
+  current_height = window.innerHeight;
+
+  current_ratio = current_width / current_height;
+
+  // Check if height is limiting factor
+  if ( current_ratio > default_ratio ){
+    h = current_height;
+    w = h * default_ratio;
+  // Else width is limiting
+  } else {
+    w = current_width;
+    h = w / default_ratio;
+  }
+
+  // Set new width and height based on graph dimensions
+  width = w - margin.left - margin.right;
+  height = h - margin.top - margin.bottom;
+
+};
+
+set_vars();
+
+function drawGraphic() {
+
+var parseTime = d3.timeParse("%Y")
+    bisectDate = d3.bisector(function(d) { return d.year; }).left;
+
+var x = d3.scaleTime().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+var line = d3.line()
+    .x(function(d) { return x(d.year); })
+    .y(function(d) { return y(d.value); });
+
+/*var g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
+
+  var g = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("data29.json", function(error, data) {
+    if (error) throw error;
+
+    data.forEach(function(d) {
+      d.year = parseTime(d.year);
+      d.value = +d.value;
+    });
+
+    x.domain(d3.extent(data, function(d) { return d.year; }));
+    y.domain([d3.min(data, function(d) { return d.value; }) / 1.005, d3.max(data, function(d) { return d.value; }) * 1.005]);
+
+    g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    g.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return parseInt(d / 1000) + "k"; }))
+      .append("text")
+        .attr("class", "axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .attr("fill", "#5D6971")
+        .text("Population)");
+
+    g.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+    var focus = g.append("g")
+        .attr("class", "focus")
+        .style("display", "none");
+
+    focus.append("line")
+        .attr("class", "x-hover-line hover-line")
+        .attr("y1", 0)
+        .attr("y2", height);
+
+    focus.append("line")
+        .attr("class", "y-hover-line hover-line")
+        .attr("x1", width)
+        .attr("x2", width);
+
+    focus.append("circle")
+        .attr("r", 7.5);
+
+    focus.append("text")
+        .attr("x", 15)
+        .attr("dy", ".31em");
+
+    g.append("rect")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height)
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", mousemove);
+
+    function mousemove() {
+      var x0 = x.invert(d3.mouse(this)[0]),
+          i = bisectDate(data, x0, 1),
+          d0 = data[i - 1],
+          d1 = data[i],
+          d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+      focus.attr("transform", "translate(" + x(d.year) + "," + y(d.value) + ")");
+      focus.select("text").text(function() { return d.value; });
+      focus.select(".x-hover-line").attr("y2", height - y(d.value));
+      focus.select(".y-hover-line").attr("x2", width + width);
+    };
+
+    });
+};
+drawGraphic();
+
+// Use a timer so the chart is not constantly redrawn while window is being resized.
+var resizeTimer;
+window.onresize = function(event) {
+ clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function()
+  {
+    var s = d3.selectAll('svg');
+    s = s.remove();
+    set_vars();
+    drawGraphic();
+  }, 100);
+}
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
+function type(d) {
+  d.value = +d.value;
+  return d;
+}
+
+</script>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var cx1 = '0px';
+var cy1 = '50px';
+var r1 = '3%';
+
+var cx2 = '-200px';
+var cy2 = '150px';
+var r2 = '10.25px';
+
+var urlImage = 'http://files.softicons.com/download/application-icons/circle-icons-add-on-2-by-martz90/png/128x128/playstation.png'
+
+
+var svg = d3.select("svg")
+			.attr('width','100%')
+			.attr('height','100%')
+
+var g = svg.append('g');
+
+var pattern = svg.append('defs')
+	.append('pattern')
+	.attr('id','image')
+	.attr('x','0%')
+	.attr('y','0%')
+	.attr('height','100%')
+	.attr('width','100%')
+	.attr('viewBox','0 0 128 128')
+	
+var image = pattern.append('image')
+			.attr('x','0%')
+			.attr('y','0%')
+			.attr('height',128)
+			.attr('width',128)
+			.attr('xlink:href',urlImage);
+	
+			
+var circle1	= g.append('g')
+			   .attr('id','PUESTO0')
+			   .append('circle')
+			   .attr('cx',cx1)
+			   .attr('cy',cy1)
+			   .attr('r','3%')
+			   .style('stroke-width',1)
+			   .style('stroke','green')
+			   .style('fill','url(#image)');
+			   
+var circle2	= g.append('g')
+			   .attr('id','PUESTO1')
+			   .append('circle')
+			   .attr('cx',cx2)
+			   .attr('cy',cy2)
+			   .attr('r',r2)
+			   .style('stroke-width',6)
+			   .style('stroke','rgb(0, 0, 255)')
+			   .style('fill','white')
+			   
+var line = g.append('line')
+			.attr('x1',cx1)
+			.attr ('y1',cy1)
+			.attr('x2',cx2)
+			.attr('y2',cy2)
+			.style("stroke-width", 4)
+			.style("stroke", "steelblue")
+
+g.attr('transform','translate(' + 567.5 + ',' + 0 + ') scale(' + 1 + ')')
+
+</script>

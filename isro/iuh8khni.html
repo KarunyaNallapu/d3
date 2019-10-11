@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		.bargraph{
+			fill:steelblue;
+			background-color:lavender;
+		}
+	</style>
+	<title>me.......</title>
+	<script src="https://d3js.org/d3.v4.js"></script>
+</head>
+<body>
+	<script >
+
+var width = 960,
+    height = 500;
+
+var xScale = d3.scaleOrdinal()
+    .domain(["A", "B", "C", "D", "E", "F"])
+    .range([0, width]);
+var yScale = d3.scaleLinear()
+    .range([height, 0]);
+
+var chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.csv("data1.csv", type, function(error, data) {
+  xScale.domain(data.map(function(d) { return d.name; }));
+  yScale.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  var bar = chart.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d) { return "translate(" + x(d.name) + ",0)"; });
+
+  bar.append("rect")
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", xScale.range());
+
+  bar.append("text")
+      .attr("x", xScale.range() / 2)
+      .attr("y", function(d) { return y(d.value) + 3; })
+      .attr("dy", ".75em")
+      .text(function(d) { return d.value; });
+});
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+
+
+
+    </script>
+</body>
+</html>

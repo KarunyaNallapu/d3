@@ -1,0 +1,33 @@
+{"nodes":[
+    {"date" : "12/09/17", "value": 80,"values":85,"valuess":80, "module": 0,"name": "Graph Database","label": "Database"},
+    {"date" : "19/09/17", "value": 85,"values":0, "valuess":0,"module": 1,"name": "Michael","label": "Person"},
+    {"date" : "26/09/17", "value": 90,"values":95, "valuess":90,"module": 2,"name": "Michael","label": "Person"},
+    {"date" : "30/09/17", "value": 95,"values":0, "valuess":0,"module": 3,"name": "Michael","label": "Person"},
+    {"date" : "08/10/17", "value": 100,"values":105, "valuess":100,"module": 4,"name": "Michael","label": "Person"},
+    {"date" : "15/10/17", "value": 105,"values":0, "valuess":0,"module": 5,"name": "Michael","label": "Person"},
+    {"date" : "22/10/17", "value": 110,"values":115, "valuess":110,"module":6,"name": "Michael","label": "Person"}
+]},
+ "links": [
+    {
+      "source": 1,
+      "target": 2,
+      "type": "KNOWS",
+      "since": 2010
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "type": "FOUNDED"
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "type": "WORKS_ON"
+    },
+    {
+      "source": 3,
+      "target": 4,
+      "type": "IS_A"
+    }
+  ]
+}

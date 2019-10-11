@@ -1,0 +1,10 @@
+[
+    {"date" : "12/09/17", "value": 80,"values":85,"valuess":80, "module": 0},
+    {"date" : "19/09/17", "value": 85,"values":0, "valuess":0,"module": 1},
+    {"date" : "26/09/17", "value": 90,"values":95, "valuess":90,"module": 2},
+    {"date" : "30/09/17", "value": 95,"values":0, "valuess":0,"module": 3},
+    {"date" : "08/10/17", "value": 100,"values":105, "valuess":100,"module": 4},
+    {"date" : "15/10/17", "value": 105,"values":0, "valuess":0,"module": 5},
+    {"date" : "22/10/17", "value": 110,"values":0, "valuess":110,"module":6}
+]
+ 

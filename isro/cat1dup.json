@@ -1,0 +1,9 @@
+[
+    {"date" : 1970, "value": 0,"values":85,"valuess":80, "module": 0},
+    {"date" : 1980, "value": 0,"values":0, "valuess":0,"module": 1},
+    {"date" : 1990, "value": 0,"values":95, "valuess":90,"module": 2},
+    {"date" : 1991, "value": 0,"values":0, "valuess":0,"module": 3},
+    {"date" : 2000, "value": 0,"values":105, "valuess":100,"module": 4},
+    {"date" : 2005, "value": 0,"values":0, "valuess":0,"module": 5},
+    {"date" : 2015, "value": 0,"values":115, "valuess":110,"module":6}
+]

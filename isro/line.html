@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>line</title>
+	<style>
+		.line{
+			fill:none;
+			stroke:#ffab00;
+			stroke-width:3;
+		}
+		.overlay{
+			fill:none;
+			pointer-events: all;
+		}
+		.dot{
+			fill:#ffab00;
+			stroke:#fff;
+		}
+		.focus.circle{
+			fill:none;
+			stroke:steelblue;
+		}
+	</style>
+</head>
+<body>
+</body>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+	var margin={top:30,bottom:30,left:30,right:30},
+	    width=1000-margin.left-margin.right,
+	    height=1000-margin.top-margin.bottom;
+	var n=21;
+	var xScale=d3.scaleLinear().domain([0,n-1]).range([0,width]);
+	var yScale=d3.scaleLinear().domain([0,1]).range([height,0]);
+	        var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(5);
+
+var yAxis = d3.svg.axis().scale(y)
+    .orient("left").ticks(5);
+	var line=d3.line().x(function(d,i){return xScale(i);})
+	                  .y(function(d,i){return yScale(d.y);})
+	                  .curve(d3.curveMonotoneX)
+	var dataset=d3.range(n).map(function(d){return {"y":d3.randomUniform(1)()}})
+	var svg=d3.select("body").append("svg")
+	          .attr("width",width+margin.left+margin.right)
+              .attr("height",height+margin.top+margin.bottom)
+              .append("g")
+              .attr("transform","translate("+margin.left+","+margin.top+")");
+            /*svg.append("g").attr("class","x axis")
+               .attr("transform","translate(0,"+height+")")
+               .call(d3.axisBottom(xScale));
+            svg.append("g").attr("class","y axis")
+               .call(d3.axisLeft(yScale));*/
+            svg.append("path").datum(dataset).attr("class","line").attr("d",line);
+            svg.selectAll(".dot").data(dataset).enter()
+               .append("circle").attr("class","dot")
+               .attr("cx",function(d,i){return xScale(i);})
+               .attr("cy",function(d,i){return yScale(d.y);})
+               .attr("r",5)
+               
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>

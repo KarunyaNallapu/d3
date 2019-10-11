@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+    body{
+        font:16px sans-serif;
+    }
+    .circle-label{
+        font:12px sans-serif;
+        opacity:0;
+    }
+    .buttons{
+        margin.bottom:10px;
+    }
+    .title{
+        font:20px sans-serif;
+        margin-bottom: 10px;
+    }
+    .y path{
+        fill:#efefef;
+    }
+    .axis line{
+        stroke:#bfbfbf;
+        stroke-dasharray: 1;
+        stroke-opacity: .5;
+    }
+    </style>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+    <script>
+    var margin={top:20,right:10,bottom:40,left:40};
+    var width=600-margin.left-margin.right;
+        height=400-margin.top-margin.bottom;
+
+    var svg=d3.select("body")
+              .append("svg")
+              .attr("width",width+margin.left+_margin.right)
+              .attr("height",height+_margin.top+margin.bottom)
+              .append("g")
+              .attr("transform","translate("+margin.left+","+margin.top+");
+
+    var xScale=d3.scaleLinear()
+                .domain([0,20])
+                .range(0,width);
+
+    var yScale=d3.scaleLinear()
+                 .domain([0,20])
+                 .range([height,0]);
+
+    var xAxis=d3.axisBottom(xScale);
+    var yAxis=d3.axisLeft(yScale);    
+    
+    svg.append("g")
+       .attr("class","y axis")
+       .call(yAxis)
+
+    svg.append("g")
+       .attr("class","x axis")
+       .call(xAxis)
+
+    d3.select(".y")
+      .select("text")
+      .remove()
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </script>
+</body>
+</html>>

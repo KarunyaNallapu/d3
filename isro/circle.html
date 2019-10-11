@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>arrow</title>
+	<style>
+		.data-line {
+  fill: none;
+  stroke: #3C92BA;
+  stroke-width: 4px;
+}
+	</style>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<svg width=800 height=600></svg>
+<script>
+     
+      var svg = d3.select("svg"),
+        margin = 200,
+        width = svg.attr("width") - margin,
+        height = svg.attr("height") - margin
+
+     var xScale = d3.scaleBand().range([0, width]),
+                yScale = d3.scaleLinear().range([height, 0]);
+
+
+    var g = svg.append("g")
+               .attr("transform", "translate(100,150)" );
+    //var gap=20;
+    d3.csv("circle.csv", function(error, data) {
+        if (error) {
+            throw error;
+        }
+
+        xScale.domain(data.map(function(d) { return d.year; }));
+        //yScale.domain([0, d3.max(data, function(d) { return d.net; })]);
+
+        g.append("g")
+         .attr("transform", "translate(-30,25)")
+         //.call(d3.axisBottom(xScale))
+
+    
+
+var line = d3.line()
+    .x(function(d) { return xScale(d.year); })
+   // .y(function(d) { return y(d.value); });
+   var myColor = d3.scaleOrdinal().domain(data)
+  .range(["grey", "blue","violet","yellow","black","brown","red","orange","seagreen"])
+   c=g.selectAll(".circle")
+         .data(data)
+         .enter().append("circle")
+         .attr("class", ".circle")
+         .attr("cx=cx1", function(d,i) { return xScale(d.year); })
+         .attr("cy=cy1",0)
+        // .attr(circleAttrs) 
+         .attr("r",20)
+         .attr("stroke-width","3px")
+         .attr("stroke",function(d,i){return myColor(i)})
+         .attr("fill","none")
+    var b=g.selectAll(".circle")
+         .data(data)
+         .enter().append("circle")
+         .attr("class", "smallcircle")
+         .attr("cx=cx2", function(d,i) {if (i%2==0) return xScale(d.year);})
+         .attr("cy=cy2",100)
+         .attr("r",5)
+         .attr("stroke-width","3px")
+         .attr("stroke",function(d,i) {
+            if (i%2==0) {return myColor(i)}
+            else    { return "none" }
+        ;})
+         .attr("fill","none")
+  
+    //line              
+/*  var line=g.append("line")
+            .attr("x1",function(d,i) {return (cx1);})
+            .attr("x2",function(d,i){return (cx2);})
+            .attr("y1",function(d,i){return (cy1);})
+            .attr("y2",function(d,i){return (cy2);})
+            //.attr("transform", "translate(33,-45) ")
+            .attr("stroke","yellow")
+            .attr("stroke-width","2px")
+            .attr("marker-end", "url(#triangle)"); */  
+    var line=g.append("line")
+            .attr("x1",cx1)
+            .attr("x2",cx2)
+            .attr("y1",cy1)
+            .attr("y2",cy2)
+            //.attr("transform", "translate(33,-45) ")
+            .attr("stroke","yellow")
+            .attr("stroke-width","2px")
+            .attr("marker-end", "url(#triangle)");
+    });
+    </script>
+</body>
+</html>

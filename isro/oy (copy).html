@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+        .y-axis{
+            stroke: black;
+        }
+        .x-axis{
+            stroke: black;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+<body>
+<div class="test" style="height:100px;width:200px;overflow:hidden"></div>
+<script>
+
+
+  //Width and height
+var w = 200,
+    h = 100,
+    barPadding = 1,
+    dataset = [ 5, 10, 13, 100, 21, 25, 22, 18, 15, 13
+                ];
+
+//Create SVG element
+var svg = d3.select(".test")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+svg.selectAll("rect")
+    .data(dataset)
+    .enter()
+    .append("rect")
+    .attr("x", function(d, i) {
+        return i * (w / dataset.length);
+    })
+    .attr("y", function(d) {
+        return h - (d * 4);
+    })
+    .attr("width", w / dataset.length - barPadding)
+    .attr("height", function(d) {
+        return d * 4;
+    })
+    .attr("fill", function(d) {
+        return "rgb(0, 0, " + (d * 10) + ")";
+    });
+
+
+
+</script>
+</body>
+</html>

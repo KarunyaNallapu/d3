@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <style>
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </style>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+    d3.helper={};
+
+    d3.helper.tooltip=function(){
+        var tooltipDiv;
+        var bodyNode=d3.select('body').node();
+        function tooltip(selection){
+            selection.on('mouseover,tooltip',function(pD,pI){
+                d3.select('body').selecAll('div.tooltip').remove();
+                tooltipDiv=d3.select('body')
+                            .append('div')
+                            .attr('class','tooltip')
+                var absoluteMousePos=d3.mouse(bodyNode);
+                    tooltipDiv.style({
+                        left:(absoluteMousePos[0]+10)+'px',
+                        top:(absoluteMousePos[1]-40)+'px',
+                        'background-color':'#d8d5e4',
+                        width:'65px',
+                        height:'30px',
+                        padding:'5px',
+                        position:'absolute',
+                        'z-index':1001,
+                        'box-shadow':'0 1px 2px 0 #656565'
+                });
+                var first_line='<p>X-Value: '+pD.index+'</p>'
+                var second_line='<p>X-Value: '+pD.value+'</p>'
+                
+                tooltipDiv.html(first_line+second_line)
+            })
+        .on('mousemove.tooltip',function(pD,pI){
+            var absoluteMousePos=d3.mouse(bodyNode);
+                tooltipDiv.remove();                
+        });
+        }
+        tooltip.attr=function(_x){
+            if(!arguments.length)return attrs;
+            attrs=_x;
+            return this;
+        };
+        tooltip.style=function(_x){
+            if(!arguments.length)return styles;
+            styles=_x;
+            return this;
+        };
+        return tooltip;
+    };
+    var data=[];
+    var values=[];
+    for(var i=2;i<=50;i++){
+        var val=Math.floor(Math.random()*(50-5+1)+5);
+        data.push({index:i,value:val});
+        values.pussh(val);
+    }
+
+    var margin={top:40,right:40,bottom:60,left:40},
+        width=960-margin.left-margin.right,
+        height=500-margin.top-margin.bottom;
+    
+    
+    
+    </script>
+    </body>
+</html>

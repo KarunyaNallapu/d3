@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="../src/d3-timeline.js"></script>
+
+  <style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .timeline-label {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+
+    #timeline2 .axis {
+      transform: translate(0px,40px);
+      -ms-transform: translate(0px,40px); /* IE 9 */
+      -webkit-transform: translate(0px,40px); /* Safari and Chrome */
+      -o-transform: translate(0px,40px); /* Opera */
+      -moz-transform: translate(0px,40px); /* Firefox */
+    }
+    
+    .coloredDiv {
+      height:20px; width:20px; float:left;
+    }
+  </style>
+  <script type="text/javascript">
+    window.onload = function() {
+      var testData = [
+    {times: [{"starting_time":36, "ending_time": 90},]},
+    //    {times: [{"starting_time": 8589, "ending_time": 9100}, ]},
+        {times: [{"starting_time":90, "ending_time":10 }, ]},
+        {times: [{"starting_time": 10, "ending_time": 30}]}
+      ];
+
+      var rectAndCircleTestData = [
+        {times: [{"starting_time": 1355752800000,
+                 "display": "circle"}, {"starting_time": 1355767900000, "ending_time": 1355774400000}]},
+        {times: [{"starting_time": 1355759910000,
+        "display":"circle"}, ]},
+        {times: [{"starting_time": 1355761910000, "ending_time": 1355763910000}]}
+      ];
+
+     
+
+      var width = 700;
+      function timelineRect() {
+        var chart = d3.timeline()
+           /*.tickFormat(//
+            {format: d3.time.format("%d/%m/%yyyy"),
+            tickTime: d3.time.year,
+            tickInterval: 1,
+            tickSize: 30});*/
+
+        var svg = d3.select("#timeline1").append("svg").attr("width", width)
+          .datum(testData).call(chart);
+      }
+      
+      function timelineRectNoAxis() {
+        var chart = d3.timeline().showTimeAxis();
+
+        var svg = d3.select("#timeline1_noaxis").append("svg").attr("width", width)
+          .datum(testData).call(chart);
+      }
+
+      function timelineCircle() {
+        var chart = d3.timeline()
+          .tickFormat( //
+            {format: d3.time.format("%y"),
+            tickYear: d3.time.Year,
+            tickInterval: 10,
+            tickSize: 20})
+          .display("circle")
+          //.attr("r",20); // toggle between rectangles and circles
+
+        var svg = d3.select("#timeline2").append("svg").attr("width", width)
+          .datum(testData).call(chart);
+      }
+
+      function timelineRectAndCircle() {
+        var chart = d3.timeline();
+
+        var svg = d3.select("#timeline2_combine").append("svg").attr("width", width)
+          .datum(rectAndCircleTestData).call(chart);
+      }
+
+      function timelineHover() {
+        var chart = d3.timeline()
+          .width(width*4)
+          .stack()
+          .margin({left:70, right:30, top:0, bottom:0})
+          .hover(function (d, i, datum) {
+          // d is the current rendering object
+          // i is the index during d3 rendering
+          // datum is the id object
+            var div = $('#hoverRes');
+            var colors = chart.colors();
+            div.find('.coloredDiv').css('background-color', colors(i))
+            div.find('#name').text(datum.label);
+          })
+          .click(function (d, i, datum) {
+            alert(datum.label);
+          })
+          .scroll(function (x, scale) {
+            $("#scrolled_date").text(scale.invert(x) + " to " + scale.invert(x+width));
+          });
+
+        var svg = d3.select("#timeline3").append("svg").attr("width", width)
+          .datum(labelTestData).call(chart);
+      }
+
+      
+      timelineRect();
+      timelineRectNoAxis();
+      timelineCircle();
+      timelineRectAndCircle();
+   
+    }
+  </script>
+</head>
+<body>
+  <div>
+    <h3>A simple timeline</h3>
+    <div id="timeline1"></div>
+  </div>
+  <div>
+    <h3>A simple timeline without Axis</h3>
+    <div id="timeline1_noaxis"></div>
+  </div>
+  <div>
+    <h3>It works with circles too</h3>
+    <div id="timeline2"></div>
+  </div>
+  <div>
+    <h3>Combine circles and rectangles</h3>
+    <div id="timeline2_combine"></div>
+  </div>
+  <div>
+
+
+
+
+</body>
+</html>

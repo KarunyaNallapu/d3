@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>line extending</title>
+	<style>
+		body{
+			font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+
+		}
+		#chart{
+            max-width:600px;
+            max-height:400px;		
+        }
+	</style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v4/min.js"></script>
+<div id="chart"></div>
+<script>
+	var lines=timelineChart();
+
+	function resize(){
+		if(d3.select("#chart svg").empty()){
+			return;
+		}
+    lines.width(+d3.select("#chart").style("width").replace(/(px)/g,""))
+         .height(+d3.select("#chart").style("height").replace(/(px)/g,""));
+    d3.select("#chart").call(lines);
+
+	}
+	d3.csv("data41.csv",function(data){
+		d3.select("#chart").datum(data).call(lines);
+		d3.select(window).on("resize",resize);
+	});
+
+
+    function timelineaChart(){
+    	var margin={top:20,right:20,bottom:50,left:50},
+    	    width=350,
+    	    height=350,
+    	    parseTime=d3.timeParse("%m%Y"),
+    	    timeValue=function(d){return parseTime(d.month);},
+    	    dataValue=function(d){return +d.value;},
+    	    color="steelblue";
+
+    function transition(path){
+    	path.transition()
+    	    .duration(2000)
+    	    .attrTween("stroke-dasharray",tweenDash);
+
+    }
+
+    function tweenDash(){
+    	var l=this.getTotalLength(),
+    	    i=d3.interpolateString("0,"+1,1+","+1);
+    	return function(t){return i(t);};
+    }
+
+    function chart(selection)
+    {
+    	selection.each(function(data){
+    		data =data.map(function(d,i){
+    			return{time:timeValue(d),value:dataValue(d)};
+    		});
+
+    var x=d3.scaleTime()
+            .rangeRound([0,width-margin.left-margin.right])
+            .domain(d3.extent(data,function))
+    	})
+    }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

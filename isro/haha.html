@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>haha</title>
+	<style type="text/css">
+		.hor_tooltip {
+    position: absolute;
+    width: 50px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    display:none
+
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.hor_tooltip:after {
+  left: 100%;
+  top: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+    border-color: rgba(255, 255, 255, 0);
+  border-left-color: #ffffff;
+  border-width: 10px;
+  margin-top: -10px;
+}
+
+.indent {
+    padding-left: 5px;
+}
+
+rect {
+    -moz-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+rect:hover {
+    fill: orange;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+	</style>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+	<script >
+		var margin = {
+        top: 25,
+        right: 40,
+        bottom: 35,
+        left: 85
+    },
+    w = 500 - margin.left - margin.right,
+    h = 220 - margin.top - margin.bottom;
+var padding = 10;
+var formatPercent = d3.format(".0%");
+
+/**var colors =	{0:	["Local", "#377EB8"],
+				 1:	["Global", "#4DAF4A"]};**/
+var color = d3.scale.ordinal().range(['#3cbcbd', '#4abc81', '#dcd048', '#4dcc37']);
+
+var dataset = [{
+    "keyword": "Descriptive",
+    'global': 70
+}, {
+    "keyword": "Inquisitive",
+    'global': 47
+}, {
+    "keyword": "Predictive",
+    'global': 47
+}, {
+    "keyword": "Prescriptive",
+    'global': 44
+}];
+var total = 0;
+dataset.forEach(function(d) {
+    total += d.global;
+});
+var xScale = d3.scale.ordinal()
+    .domain(d3.range(dataset.length))
+    .rangeRoundBands([0, w], 0.05);
+// ternary operator to determine if global or local has a larger scale
+/*var yScale = d3.scale.linear()
+				.domain([0, d3.max(dataset, function(d) { return (d.local > d.global) ? d.local : d.global;})]) 
+				.range([h, 0]);*/
+var yScale = d3.scale.linear()
+    .domain([0, 100])
+    .range([h, 0]);
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .tickFormat(function(d) {
+        return dataset[d].keyword;
+    });
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left")
+    .ticks(10);
+var tooltip = d3.select('body').append('div')
+    .style('position','absolute')
+    .attr('class','hor_tooltip')
+
+var global = function(d) {
+    return d.global;
+};
+
+var commaFormat = d3.format(".0%");
+//SVG element
+d3.select('svg#dippSVG').remove();
+var svg = d3.select("#vertical_bar_chart_container")
+    .append("svg")
+    //.attr("width", w + margin.left + margin.right)
+    //.attr("height", h + margin.top + margin.bottom)
+    .attr('width', "80%")
+    .attr('height', "80%")
+    .attr("viewBox", "0 0 500 250")
+    .attr("class", "vert_bar_chart_graph")
+    .attr("id", "dippSVG")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+// Graph Bars
+var sets = svg.selectAll(".set")
+    .data(dataset)
+    .enter()
+    .append("g")
+    .attr("class", "set")
+    .attr("transform", function(d, i) {
+        return "translate(" + xScale(i) + ",0)";
+    });
+
+
+sets.append("rect")
+    .attr("class", "global")
+    .attr("width", xScale.rangeBand() / 2)
+    .attr('y', function(d) {
+        return yScale((d.global / total) * 100);
+    })
+    .attr("height", function(d) {
+        return h - yScale((d.global / total) * 100);
+    })
+    .attr('fill', function(d, i) {
+        return color(d.keyword);
+    })
+
+.on('mouseover', function(d) {
+        tooltip.transition()
+            .style('opacity', 1.0)
+            .style('background', 'white')
+            .style('display','block')
+   
+            
+        tooltip.html( d.global )
+            .style('left',(d3.event.pageX - 35) + 'px')
+            .style('top', (d3.event.pageY - 30) + 'px')
+    })
+    .on('mouseout', function(d) {
+        tooltip.transition()
+            .style('opacity', 1)
+            .style('display','none')
+    })
+
+    .append("text")
+    .text(function(d) {
+        return commaFormat((d.global / total) * 100);
+    })
+    //.attr('x', function(d, i) {
+    //	return xScale(i) + xScale.rangeBand() / 2;
+    //})
+    //.attr('y', function(d) {
+    //	return h - yScale((d.global/total)*100) + 14;
+    //})
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "11px");
+
+
+function make_y_axis() { //function to make grid lines
+    return d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .ticks(10)
+}
+
+//append text
+sets.append("text")
+    .attr("class", "global")
+    .attr("y", function(d) {
+        return yScale((d.global / total) * 100) - (margin.top / 4);
+    })
+    .attr("dy", 5)
+    .attr("dx", (xScale.rangeBand() / 8))
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "14px")
+    .attr("fill", "black")
+    .text(function(d) {
+        return (d.global > 0) ? commaFormat(d.global / total) : "";
+    });
+
+// xAxis
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + (h) + ")")
+    .call(xAxis);
+// yAxis
+svg.append("g")
+    .attr("class", "y axis")
+    .attr("transform", "translate(0 ,0)")
+    .call(yAxis);
+
+svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left + margin.top)
+    .attr("x", 0 - (h / 2))
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .text("Percentage of Tests");
+
+//y axis grid line functions
+svg.append("g")
+    .attr("class", "grid")
+    .call(make_y_axis()
+        .tickSize(-w, 0, 0)
+        .tickFormat("")
+    )
+
+	</script>
+
+</body>
+</html>
