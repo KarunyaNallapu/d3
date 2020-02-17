@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
@@ -10,7 +11,7 @@ import { Book } from './book';
 @Injectable()
 export class BookService {
     url = "http://localhost:4200/assets/data/books.json";
-	constructor(private http:Http) { }
+	constructor(private http:HttpClient) { }
     getBooksWithObservable(): Observable<Book[]> {
         return this.http.get(this.url)
 		        .map(this.extractData)
